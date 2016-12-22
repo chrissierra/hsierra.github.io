@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body { height: 100%; margin: 0; padding: 0; }
+      #map { height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="text/javascript">
+
+
+
+function success(pos) {
+  var crd = pos.coords;
+localStorage.setItem("latitud", crd.latitude);
+localStorage.setItem("longitud", crd.longitude);
+localStorage.setItem("efectividad", crd.accuracy);
+
+  console.log('Your current position is:');
+  console.log('Latitude : ' + crd.latitude);
+  console.log('Longitude: ' + crd.longitude);
+  console.log('More or less ' + crd.accuracy + ' meters.');
+  
+};
+
+
+function initMap() {
+var latitud= parseFloat(localStorage.getItem("latitud"))
+var longitud= parseFloat(localStorage.getItem("longitud"))
+var accuracy= parseFloat(localStorage.getItem("efectividad"))
+alert(latitud)
+
+  var myLatLng = {lat: latitud, lng: longitud};
+
+  var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 15,
+    center: myLatLng
+  });
+
+
+
+
+
+ /* var contentString = 'hola';
+
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });*/
+
+
+
+//empieza funcion fetch
+fetch('peo.txt').then(function(response) {
+return response.text();
+}).then(function(text){
+  //console.log(text)
+  textoAreaDividido = text.split(",");
+  //console.log(textoAreaDividido[1]);
+  for (var i = 0; i < textoAreaDividido.length; i++) {
+    if(textoAreaDividido[i].length<5){
+      return;
+    }
+        var n0 = textoAreaDividido[i].search("{");
+    var n1 = textoAreaDividido[i].search("}");
+      var n2 = textoAreaDividido[i].search("/");
+      var n3 = textoAreaDividido[i].search(";");
+//alert(n2)
+console.log(n1)
+      var descripcion = textoAreaDividido[i].substr(n0+1, n1-n0-1);
+      var latitud = parseFloat(textoAreaDividido[i].substr(n1+1, n2-n1-1));
+      var longitud = parseFloat(textoAreaDividido[i].substr(n2+1, textoAreaDividido[i].length));
+      console.log(latitud)
+      //abajo poner codigo para marcador y texto googlemaps
+
+
+var contentString = descripcion;
+
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });
+var myLatLng1 = {lat: latitud, lng: longitud};
+//var marker= [];
+var marker = new google.maps.Marker({
+    position: myLatLng1,
+    map: map,
+    title: descripcion
+
+  });
+
+  
+ google.maps.event.addListener(marker, 'click', (function(marker, i) {
+         return function() {
+             infowindow.setContent(textoAreaDividido[i].substr(0, textoAreaDividido[i].search("}")));
+             infowindow.open(map, marker);
+         }
+    })(marker, i));
+
+
+      //arriba espacio para codigo marcador y texto googlemaps
+
+  };
+})
+//aca termina funcion fetch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'Uluru (Ayers Rock)'
+  });
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
+  });*/
+  
+}
+
+navigator.geolocation.getCurrentPosition(success);
+
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfsVMqX1spv7VbRZurOlSLMJnpbo4MauI&callback=initMap">
+    </script>
+  </body>
+</html>
